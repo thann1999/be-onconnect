@@ -1,17 +1,21 @@
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
+import express from 'express';
+import cookieParser from 'cookie-parser';
+import logger from 'morgan';
+import indexRouter from './routes/index';
+import dotenv from 'dotenv';
+import cors from 'cors';
 
-var indexRouter = require('./routes/index');
+dotenv.config();
+const app = express();
 
-var app = express();
-
+// Config
+app.use(cors());
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
+// Routes
 app.use('/', indexRouter);
 
-module.exports = app;
+export default app;
