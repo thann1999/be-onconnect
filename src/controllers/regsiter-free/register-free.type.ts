@@ -1,3 +1,5 @@
+import { CreateUserResponse } from '../../api/leeon.api';
+
 export interface RegisterFreeBody {
   email: string;
   firstName: string;
@@ -12,4 +14,5 @@ export interface RegisterFreeBody {
 
 export interface RegisterFreeResponse {
   registerStatus: string;
+  user: CreateUserResponse | null;
 }

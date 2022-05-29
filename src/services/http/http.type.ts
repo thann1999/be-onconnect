@@ -7,10 +7,15 @@ export enum HttpStatus {
   BAD_REQUEST = 400,
 }
 
+export interface ErrorDataLeeonAPI {
+  status: boolean;
+  message: string[];
+}
+
 export interface HttpResponse<T> {
   message?: string;
   data: T;
-  status: number;
+  status?: number;
   header?: AxiosResponseHeaders;
 }
 
@@ -26,7 +31,7 @@ export interface HttpOptions {
     string,
     string | number | boolean | string[] | number[] | boolean[] | undefined
   >;
-  body?: Record<string, unknown> | FormData;
+  body?: unknown | FormData;
   headers?: AxiosRequestHeaders;
   onUploadProgress?: (progressEvent: any) => void;
 }

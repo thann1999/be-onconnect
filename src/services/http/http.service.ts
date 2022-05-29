@@ -3,11 +3,12 @@ import { HttpMethod, HttpOptions } from './http.type';
 
 export class HttpService {
   private _commonHeader = {
-    Accept: 'application/json',
-    'Cache-Control': 'no-cache no-store',
-    Pragma: 'no-cache',
-    Expires: 0,
-    'Access-Control-Allow-Origin': '*',
+    // Accept: 'application/json',
+    // 'Cache-Control': 'no-cache no-store',
+    // Pragma: 'no-cache',
+    // Expires: 0,
+    // 'Access-Control-Allow-Origin': '*',
+    // 'X-Requested-With': 'XMLHttpRequest',
   };
 
   public get<T>(uri: string, options?: HttpOptions): Promise<T | undefined> {
@@ -41,12 +42,13 @@ export class HttpService {
         params: options?.queryParams,
         headers: this.generateHeader(options?.headers),
         onUploadProgress: options?.onUploadProgress,
+        withCredentials: true,
       });
 
       return response.data;
     } catch (error) {
       if (axios.isAxiosError(error)) {
-        throw error;
+        throw error.response?.data;
       } else {
         throw new Error('Error');
       }
@@ -54,9 +56,13 @@ export class HttpService {
   }
 
   private generateHeader = (header?: AxiosRequestHeaders): AxiosRequestHeaders => {
+    const username = process.env.PBX_USERNAME;
+    const password = process.env.PBX_PASSWORD;
+    const basicAuth = 'Basic ' + Buffer.from(`${username}:${password}`).toString('base64');
     return {
       ...this._commonHeader,
       ...header,
+      Authorization: basicAuth,
     };
   };
 
