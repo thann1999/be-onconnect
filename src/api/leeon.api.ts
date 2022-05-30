@@ -54,7 +54,7 @@ export interface CreateUserResponse {
 }
 
 interface SetRoleuser {
-  userId: number;
+  userId: string;
   orgUnitId: number;
 }
 

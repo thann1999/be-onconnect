@@ -34,33 +34,41 @@ class RegisterFree {
         type: 'pbx',
       });
       const orgUnitId = pbxInfo?.data.id || 0;
-      await LeeonAPI.setMaxExtensions({
-        orgUnitId,
-        value: '5', // fake data
-      });
-      const user = await LeeonAPI.createUser({
-        email,
-        fullName,
-        language,
-        orgUnitId,
-        password: generator.generate({
-          length: 10,
-          numbers: true,
-        }),
-      });
-      await LeeonAPI.setRoleUser({
-        orgUnitId,
-        userId: user?.data.id || 0,
-      });
+      const timeout = setTimeout(async () => {
+        try {
+          await LeeonAPI.setMaxExtensions({
+            orgUnitId,
+            value: '5', // fake data
+          });
+          const user = await LeeonAPI.createUser({
+            email,
+            fullName,
+            language,
+            orgUnitId,
+            password: `${generator.generate({
+              length: 10,
+              numbers: true,
+            })}1`,
+          });
 
-      const response: HttpResponse<RegisterFreeResponse> = {
-        data: {
-          registerStatus: 'Success',
-          user: user || null,
-        },
-        message: '',
-      };
-      res.json(response);
+          // await LeeonAPI.setRoleUser({
+          //   orgUnitId,
+          //   userId: String(user?.data.id) || '',
+          // });
+
+          const response: HttpResponse<RegisterFreeResponse> = {
+            data: {
+              registerStatus: 'Success',
+              user: user || null,
+            },
+            message: '',
+          };
+          clearTimeout(timeout);
+          res.json(response);
+        } catch (error) {
+          return res.status(HttpStatus.BAD_REQUEST).json({ message: 'error' });
+        }
+      }, 1000);
     } catch (error) {
       const leeonError = error as ErrorDataLeeonAPI;
       const response: HttpResponse<null> = {
