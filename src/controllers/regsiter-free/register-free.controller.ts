@@ -1,12 +1,18 @@
 import { NextFunction, Request, Response } from 'express';
 import { validationHandleError } from '../../services/validation/validation-handle-error';
-import { ErrorDataLeeonAPI, HttpResponse, HttpStatus } from '../../services/http/http.type';
-import { RegisterFreeBody, RegisterFreeResponse } from './register-free.type';
+import { HttpResponse, HttpStatus } from '../../services/http/http.type';
+import { RegisterFreeResponse } from './register-free.type';
 import LeeonAPI from '../../api/leeon.api';
 import generator from 'generate-password';
+import { Role, UserInfo, UserRequestBody } from '../../shared/types/user.type';
+import UserDao from '../../dao/user.dao';
+import { getMailContent, sendMail } from '../../services/send-email/email.service';
+import { handleError } from '../../services/http/handle-error.service';
+import { RegisterFreeMessage } from '../../shared/const/message.const';
+import { delay } from '../../helpers/delay.helper';
 
 class RegisterFree {
-  async register(req: Request<{}, {}, RegisterFreeBody>, res: Response, next: NextFunction) {
+  async register(req: Request<{}, {}, UserRequestBody>, res: Response, next: NextFunction) {
     const validationErrors = validationHandleError(req);
     if (validationErrors.errors) {
       return res.status(HttpStatus.BAD_REQUEST).json(validationErrors);
@@ -34,48 +40,70 @@ class RegisterFree {
         type: 'pbx',
       });
       const orgUnitId = pbxInfo?.data.id || 0;
-      const timeout = setTimeout(async () => {
-        try {
-          await LeeonAPI.setMaxExtensions({
-            orgUnitId,
-            value: '5', // fake data
-          });
-          const user = await LeeonAPI.createUser({
-            email,
-            fullName,
-            language,
-            orgUnitId,
-            password: `${generator.generate({
-              length: 10,
-              numbers: true,
-            })}1`,
-          });
+      await delay(1000);
+      await LeeonAPI.setMaxExtensions({
+        orgUnitId,
+        value: '5', // fake data
+      });
+      const generatePassword = `${generator.generate({
+        length: 9,
+        numbers: true,
+      })}1`;
 
-          // await LeeonAPI.setRoleUser({
-          //   orgUnitId,
-          //   userId: String(user?.data.id) || '',
-          // });
+      const user = await LeeonAPI.createUser({
+        email,
+        fullName,
+        language,
+        orgUnitId,
+        password: generatePassword,
+      });
 
-          const response: HttpResponse<RegisterFreeResponse> = {
-            data: {
-              registerStatus: 'Success',
-              user: user || null,
-            },
-            message: '',
-          };
-          clearTimeout(timeout);
-          res.json(response);
-        } catch (error) {
-          return res.status(HttpStatus.BAD_REQUEST).json({ message: 'error' });
-        }
-      }, 1000);
-    } catch (error) {
-      const leeonError = error as ErrorDataLeeonAPI;
-      const response: HttpResponse<null> = {
-        data: null,
-        message: leeonError.message?.[0],
+      await LeeonAPI.setRoleUser({
+        orgUnitId,
+        userId: String(user?.data.id) || '',
+      });
+
+      const userInfo: UserInfo = {
+        email,
+        firstName,
+        language,
+        lastName,
+        packageId,
+        phoneNumber,
+        switchboardName,
+        companyName,
+        companyRegion,
+        orgUnitId,
+        leeonPassword: user?.data.password || '',
+        password: generatePassword,
+        leeonUserId: user?.data.id || 0,
+        role: Role.USER,
       };
-      res.status(HttpStatus.BAD_REQUEST).json(response);
+
+      await UserDao.insertUser(userInfo);
+
+      const response: HttpResponse<RegisterFreeResponse> = {
+        data: {
+          user: userInfo || null,
+        },
+        message: '',
+        status: HttpStatus.SUCCESS,
+      };
+
+      await sendMail(getMailContent(email, generatePassword))
+        .then(() => {
+          console.log(`Email sent: ${email}`);
+        })
+        .catch(() => {
+          return res.status(HttpStatus.BAD_REQUEST).json({
+            message: `${RegisterFreeMessage.SEND_MAIL_FAIL} ${email}`,
+          });
+        });
+
+      res.status(response.status).json(response.data);
+    } catch (error) {
+      const leeonError = handleError(error);
+      res.status(leeonError.status).json(leeonError);
     }
   }
 }

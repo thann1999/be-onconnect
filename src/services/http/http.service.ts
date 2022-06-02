@@ -47,6 +47,7 @@ export class HttpService {
 
       return response.data;
     } catch (error) {
+      console.log(error);
       if (axios.isAxiosError(error)) {
         throw error.response?.data;
       } else {

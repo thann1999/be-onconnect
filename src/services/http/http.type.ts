@@ -15,7 +15,7 @@ export interface ErrorDataLeeonAPI {
 export interface HttpResponse<T> {
   message?: string;
   data: T;
-  status?: number;
+  status: number;
   header?: AxiosResponseHeaders;
 }
 
