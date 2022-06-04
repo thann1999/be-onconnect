@@ -1,7 +1,7 @@
 import { body } from 'express-validator';
 
-class RegisterFreeValidation {
-  validateRegisterFree() {
+class AuthValidation {
+  validateRegister() {
     return [
       body('email')
         .notEmpty()
@@ -20,7 +20,14 @@ class RegisterFreeValidation {
         .withMessage('Language only is vi, en, de, fr, it'),
     ];
   }
+
+  validateLogin() {
+    return [
+      body('email', 'Email is required').notEmpty(),
+      body('password', 'Password is required').notEmpty(),
+    ];
+  }
 }
 
-const instance = new RegisterFreeValidation();
+const instance = new AuthValidation();
 export default instance;

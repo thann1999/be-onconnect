@@ -5,7 +5,7 @@ import { MailOptions } from 'nodemailer/lib/json-transport';
 
 const oAuth2Client = new google.auth.OAuth2(
   GoogleConfig.CLIENT_ID,
-  GoogleConfig.CLIENT_SECRET_ID,
+  process.env.CLIENT_SECRET_ID,
   GoogleConfig.REDIRECT_URI
 );
 
@@ -23,7 +23,7 @@ export async function sendMail(mail: MailOptions) {
         type: 'OAuth2',
         user: process.env.USER_GMAIL,
         clientId: GoogleConfig.CLIENT_ID,
-        clientSecret: GoogleConfig.CLIENT_SECRET_ID,
+        clientSecret: process.env.CLIENT_SECRET_ID,
         refreshToken: GoogleConfig.REFRESH_TOKEN,
       },
     } as TransportOptions);

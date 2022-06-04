@@ -1,7 +1,7 @@
 import express, { Request, Response } from 'express';
 import cookieParser from 'cookie-parser';
 import logger from 'morgan';
-import registerFreeRoute from './routes/register-free.route';
+import authRoute from './routes/authentication.route';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import sequelize from './database/db-connection';
@@ -31,7 +31,7 @@ app.use(cookieParser());
 })();
 
 // Routes
-app.use('/api/register-free', registerFreeRoute);
+app.use('/api/auth', authRoute);
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
