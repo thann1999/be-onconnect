@@ -1,4 +1,5 @@
 import {
+  Attributes,
   FindAttributeOptions,
   FindOptions,
   Model,
@@ -30,6 +31,18 @@ class BaseDao {
       if (attributes) option.attributes = attributes;
       model
         .findOne(option)
+        .then((value) => resolve(value))
+        .catch((err) => reject(err));
+    });
+  }
+
+  update(model: ModelStatic<Model<any, any>>, where: any, values: Attributes<any>) {
+    return new Promise((resolve, reject) => {
+      model
+        .update(values, {
+          where,
+          logging: false,
+        })
         .then((value) => resolve(value))
         .catch((err) => reject(err));
     });
