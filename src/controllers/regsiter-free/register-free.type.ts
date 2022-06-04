@@ -1,15 +1,5 @@
-export interface RegisterFreeBody {
-  email: string;
-  firstName: string;
-  lastName: string;
-  phoneNumber: string;
-  companyName: string;
-  companyRegion: string;
-  switchboardName: string;
-  packageId: string;
-  language: string;
-}
+import { UserInfo } from 'shared/types/user.type';
 
 export interface RegisterFreeResponse {
-  registerStatus: string;
+  user: UserInfo | null;
 }

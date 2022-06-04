@@ -4,7 +4,7 @@ import logger from 'morgan';
 import registerFreeRoute from './routes/register-free.route';
 import dotenv from 'dotenv';
 import cors from 'cors';
-import sequelize from './config/db-connection';
+import sequelize from './database/db-connection';
 import { AxiosError } from 'axios';
 import createError from 'http-errors';
 import helmet from 'helmet';
@@ -23,7 +23,7 @@ app.use(cookieParser());
 // Connect DB
 (async () => {
   try {
-    await sequelize.sync({ alter: true });
+    await sequelize.sync({ alter: true, logging: false });
     console.log('Connection has been established successfully.');
   } catch (error) {
     console.error('Unable to connect to the database:', error);
