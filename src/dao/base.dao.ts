@@ -1,10 +1,35 @@
-import { Model, ModelStatic } from 'sequelize/types';
+import {
+  FindAttributeOptions,
+  FindOptions,
+  Model,
+  ModelStatic,
+  Optional,
+  WhereOptions,
+} from 'sequelize/types';
 
 class BaseDao {
-  insertOne(model: ModelStatic<Model<any, any>>, data: any) {
+  insertOne(model: ModelStatic<Model<any, any>>, data: Optional<any, string>) {
     return new Promise((resolve, reject) => {
       model
         .create(data, { logging: false })
+        .then((value) => resolve(value))
+        .catch((err) => reject(err));
+    });
+  }
+
+  findOne(
+    model: ModelStatic<Model<any, any>>,
+    where: WhereOptions,
+    attributes?: FindAttributeOptions
+  ) {
+    return new Promise((resolve, reject) => {
+      const option: FindOptions = {
+        where,
+        logging: false,
+      };
+      if (attributes) option.attributes = attributes;
+      model
+        .findOne(option)
         .then((value) => resolve(value))
         .catch((err) => reject(err));
     });

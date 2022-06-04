@@ -1,10 +1,18 @@
 import UserModel from '../models/user.models';
-import { UserInfo } from 'shared/types/user.type';
+import { UserInfo } from '../shared/types/user.type';
 import BaseDao from './base.dao';
+import { Optional } from 'sequelize/types';
 
 class UserDao extends BaseDao {
   insertUser(data: UserInfo) {
-    super.insertOne(UserModel, data);
+    const insertData: Optional<any, string> = {
+      ...data,
+    };
+    return super.insertOne(UserModel, insertData);
+  }
+
+  findUserByEmailAndPassword(email: string, password: string) {
+    return super.findOne(UserModel, { email, password });
   }
 }
 
