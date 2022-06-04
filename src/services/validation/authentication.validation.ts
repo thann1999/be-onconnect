@@ -27,6 +27,13 @@ class AuthValidation {
       body('password', 'Password is required').notEmpty(),
     ];
   }
+
+  validateChangePassword() {
+    return [
+      body('currentPassword', 'Current password is required').notEmpty(),
+      body('newPassword', 'New password is required').notEmpty(),
+    ];
+  }
 }
 
 const instance = new AuthValidation();

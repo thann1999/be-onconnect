@@ -14,6 +14,10 @@ class UserDao extends BaseDao {
   findUserByEmailAndPassword(email: string, password: string) {
     return super.findOne(UserModel, { email, password });
   }
+
+  updateUser(where: any, value: any) {
+    return super.update(UserModel, where, value);
+  }
 }
 
 const instance = new UserDao();
