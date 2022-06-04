@@ -1,7 +1,13 @@
+import { Request } from 'express';
+
 /* eslint-disable no-unused-vars */
 export enum Role {
   USER = 'user',
   ADMIN = 'admin',
+}
+
+export interface CustomRequestUser extends Request {
+  user?: any;
 }
 
 export interface UserRequestBody {

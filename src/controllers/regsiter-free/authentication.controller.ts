@@ -9,8 +9,8 @@ import { handleError } from '../../services/http/handle-error.service';
 import { HttpResponse, HttpStatus } from '../../services/http/http.type';
 import { getMailContent, sendMail } from '../../services/send-email/email.service';
 import { validationHandleError } from '../../services/validation/validation-handle-error';
-import { LoginMessage, RegisterMessage } from '../../shared/const/message.const';
-import { Role, UserInfo, UserRequestBody } from '../../shared/types/user.type';
+import { AuthenticationMessage } from '../../shared/const/message.const';
+import { CustomRequestUser, Role, UserInfo, UserRequestBody } from '../../shared/types/user.type';
 import { LoginRequestBody, LoginResponse, UserModelInfo } from './authentication.type';
 
 class AuthController {
@@ -95,7 +95,7 @@ class AuthController {
         })
         .catch(() => {
           return res.status(HttpStatus.BAD_REQUEST).json({
-            message: `${RegisterMessage.SEND_MAIL_FAIL} ${email}`,
+            message: `${AuthenticationMessage.SEND_MAIL_FAIL} ${email}`,
           });
         });
 
@@ -162,8 +162,33 @@ class AuthController {
         return res.status(response.status).json(response);
       }
 
-      response.message = LoginMessage.LOGIN_INFO_WRONG;
+      response.message = AuthenticationMessage.LOGIN_INFO_WRONG;
       res.status(HttpStatus.BAD_REQUEST).json(response);
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  changePassword = async (req: CustomRequestUser, res: Response, next: NextFunction) => {
+    const validationErrors = validationHandleError(req);
+    if (validationErrors.errors) {
+      return res.status(HttpStatus.BAD_REQUEST).json(validationErrors);
+    }
+
+    try {
+      const { currentPassword, newPassword } = req.body;
+      const result = (await UserDao.updateUser(
+        { id: req.user?.id, password: this.hashPassword(currentPassword) },
+        { password: this.hashPassword(newPassword) }
+      )) as number[];
+      const response: HttpResponse<null> = {
+        data: null,
+        status: result?.[0] ? HttpStatus.SUCCESS : HttpStatus.BAD_REQUEST,
+        message: result?.[0]
+          ? AuthenticationMessage.CHANGE_PASSWORD_SUCCESS
+          : AuthenticationMessage.WRONG_CURRENT_PASSWORD,
+      };
+      res.status(response.status).json(response);
     } catch (error) {
       next(error);
     }
