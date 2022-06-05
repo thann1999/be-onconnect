@@ -2,6 +2,7 @@ import express, { Request, Response } from 'express';
 import cookieParser from 'cookie-parser';
 import logger from 'morgan';
 import authRoute from './routes/authentication.route';
+import packageRoute from './routes/package.route';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import sequelize from './database/db-connection';
@@ -24,6 +25,10 @@ app.use(cookieParser());
 (async () => {
   try {
     await sequelize.sync({ alter: true, logging: false });
+    // Initial package
+    // await PackageDao.insertManyPackage(initialPackage);
+    // Initial compare list
+    // await PackageDao.insertManyCompare(initialCompareList);
     console.log('Connection has been established successfully.');
   } catch (error) {
     console.error('Unable to connect to the database:', error);
@@ -32,6 +37,7 @@ app.use(cookieParser());
 
 // Routes
 app.use('/api/auth', authRoute);
+app.use('/api/package', packageRoute);
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {

@@ -10,8 +10,14 @@ import { HttpResponse, HttpStatus } from '../../services/http/http.type';
 import { getMailContent, sendMail } from '../../services/send-email/email.service';
 import { validationHandleError } from '../../services/validation/validation-handle-error';
 import { AuthenticationMessage } from '../../shared/const/message.const';
-import { CustomRequestUser, Role, UserInfo, UserRequestBody } from '../../shared/types/user.type';
-import { LoginRequestBody, LoginResponse, UserModelInfo } from './authentication.type';
+import { CustomRequestUser, UserInfo } from '../../shared/types/user.type';
+import {
+  LoginRequestBody,
+  LoginResponse,
+  UserModelInfo,
+  UserRequestBody,
+  Role,
+} from './authentication.type';
 
 class AuthController {
   register = async (req: Request<{}, {}, UserRequestBody>, res: Response) => {
@@ -83,9 +89,8 @@ class AuthController {
       };
 
       await UserDao.insertUser(userInfo);
-      const response: HttpResponse<null> = {
-        data: null,
-        message: '',
+      const response: HttpResponse<{}> = {
+        data: {},
         status: HttpStatus.SUCCESS,
       };
 
@@ -99,7 +104,7 @@ class AuthController {
           });
         });
 
-      res.status(response.status).json(response);
+      res.status(response.status).json(response.data);
     } catch (error) {
       const leeonError = handleError(error);
       res.status(leeonError.status).json(leeonError);
@@ -159,11 +164,11 @@ class AuthController {
         };
         response.status = HttpStatus.SUCCESS;
 
-        return res.status(response.status).json(response);
+        return res.status(response.status).json(response.data);
       }
 
-      response.message = AuthenticationMessage.LOGIN_INFO_WRONG;
-      res.status(HttpStatus.BAD_REQUEST).json(response);
+      response.data.message = AuthenticationMessage.LOGIN_INFO_WRONG;
+      res.status(HttpStatus.BAD_REQUEST).json(response.data);
     } catch (error) {
       next(error);
     }
@@ -181,14 +186,15 @@ class AuthController {
         { id: req.user?.id, password: this.hashPassword(currentPassword) },
         { password: this.hashPassword(newPassword) }
       )) as number[];
-      const response: HttpResponse<null> = {
-        data: null,
+      const response: HttpResponse<{}> = {
+        data: {
+          message: result?.[0]
+            ? AuthenticationMessage.CHANGE_PASSWORD_SUCCESS
+            : AuthenticationMessage.WRONG_CURRENT_PASSWORD,
+        },
         status: result?.[0] ? HttpStatus.SUCCESS : HttpStatus.BAD_REQUEST,
-        message: result?.[0]
-          ? AuthenticationMessage.CHANGE_PASSWORD_SUCCESS
-          : AuthenticationMessage.WRONG_CURRENT_PASSWORD,
       };
-      res.status(response.status).json(response);
+      res.status(response.status).json(response.data);
     } catch (error) {
       next(error);
     }
