@@ -12,9 +12,10 @@ export interface ErrorDataLeeonAPI {
   message: string[];
 }
 
-export interface HttpResponse<T> {
-  message?: string;
-  data: T;
+export interface HttpResponse<T extends {}> {
+  data: T & {
+    message?: string;
+  };
   status: number;
   header?: AxiosResponseHeaders;
 }

@@ -18,6 +18,15 @@ class BaseDao {
     });
   }
 
+  insertMany(model: ModelStatic<Model<any, any>>, data: Optional<any, string>[]) {
+    return new Promise((resolve, reject) => {
+      model
+        .bulkCreate(data, { logging: false })
+        .then((value) => resolve(value))
+        .catch((err) => reject(err));
+    });
+  }
+
   findOne(
     model: ModelStatic<Model<any, any>>,
     where: WhereOptions,
@@ -31,6 +40,22 @@ class BaseDao {
       if (attributes) option.attributes = attributes;
       model
         .findOne(option)
+        .then((value) => resolve(value))
+        .catch((err) => reject(err));
+    });
+  }
+
+  findAll(
+    model: ModelStatic<Model<any, any>>,
+    where?: WhereOptions,
+    attributes?: FindAttributeOptions
+  ) {
+    return new Promise((resolve, reject) => {
+      const option: FindOptions = { logging: false };
+      if (where) option.where = where;
+      if (attributes) option.attributes = attributes;
+      model
+        .findAll(option)
         .then((value) => resolve(value))
         .catch((err) => reject(err));
     });
