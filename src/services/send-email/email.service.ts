@@ -2,6 +2,7 @@ import nodemailer, { TransportOptions } from 'nodemailer';
 import { google } from 'googleapis';
 import { GoogleConfig } from './google-config';
 import { MailOptions } from 'nodemailer/lib/json-transport';
+import { UpgradePackageRequest } from 'shared/types/package.type';
 
 const oAuth2Client = new google.auth.OAuth2(
   GoogleConfig.CLIENT_ID,
@@ -35,7 +36,7 @@ export async function sendMail(mail: MailOptions) {
 }
 
 // Mail content include: Username, password
-export function getMailContent(email: string, password: string): MailOptions {
+export function registerMailContent(email: string, password: string): MailOptions {
   return {
     from: process.env.USER_GMAIL,
     to: email,
@@ -47,6 +48,27 @@ export function getMailContent(email: string, password: string): MailOptions {
       <p style="margin-left: 20px">Mật khẩu: ${password}</p>
       <p>Click vào link dưới đây để đăng nhập</p>
       <a href="${process.env.CLIENT_URL}/login">Đăng nhập</a>
+    `,
+  };
+}
+
+export function upgradePackageMail(data: UpgradePackageRequest) {
+  const { companyName, companyRegion, email, firstName, lastName, packageName, phoneNumber } = data;
+  const fullName = `${firstName} ${lastName}`;
+  return {
+    from: process.env.USER_GMAIL,
+    to: process.env.SALES_MAIL,
+    subject: '[Onconnect] Nâng cấp gói cước',
+    html: `
+      <h2 style="text-align: center">Yêu cầu nâng cấp gói cước của khách hàng</h2>
+      <p>Thông tin khách hàng như sau:</p>
+      <p style="margin-left: 20px">Họ và tên: ${fullName}</p>
+      <p style="margin-left: 20px">Email: ${email}</p>
+      <p style="margin-left: 20px">Số điện thoại: ${phoneNumber}</p>
+      <p style="margin-left: 20px">Tên gói cước: ${packageName}</p>
+      <p style="margin-left: 20px">Công ty: ${companyName}</p>
+      <p style="margin-left: 20px">Địa chỉ: ${companyRegion}</p>
+      <p>Vui lòng liên hệ với khách hàng sớm nhất có thể.</p>
     `,
   };
 }

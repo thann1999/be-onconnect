@@ -7,7 +7,7 @@ import UserDao from '../../dao/user.dao';
 import { delay } from '../../helpers/delay.helper';
 import { handleError } from '../../services/http/handle-error.service';
 import { HttpResponse, HttpStatus } from '../../services/http/http.type';
-import { getMailContent, sendMail } from '../../services/send-email/email.service';
+import { registerMailContent, sendMail } from '../../services/send-email/email.service';
 import { validationHandleError } from '../../services/validation/validation-handle-error';
 import { AuthenticationMessage } from '../../shared/const/message.const';
 import { CustomRequestUser, UserInfo } from '../../shared/types/user.type';
@@ -94,7 +94,7 @@ class AuthController {
         status: HttpStatus.SUCCESS,
       };
 
-      await sendMail(getMailContent(email, generatePassword))
+      await sendMail(registerMailContent(email, generatePassword))
         .then(() => {
           console.log(`Email sent: ${email}`);
         })

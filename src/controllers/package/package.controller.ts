@@ -1,8 +1,10 @@
 import { NextFunction, Request, Response } from 'express';
 import { HttpResponse, HttpStatus } from '../../services/http/http.type';
-import { CompareInfo, PackageInfo } from '../../shared/types/package.type';
+import { CompareInfo, PackageInfo, UpgradePackageRequest } from '../../shared/types/package.type';
 import PackageDao from '../../dao/package.dao';
 import { ComparePackageList, PackageList } from './package.type';
+import { sendMail, upgradePackageMail } from '../../services/send-email/email.service';
+import { CommonMessage } from '../../shared/const/message.const';
 
 class PackageController {
   getListAll = async (req: Request, res: Response, next: NextFunction) => {
@@ -30,6 +32,33 @@ class PackageController {
         status: HttpStatus.SUCCESS,
       };
       res.status(response.status).json(response.data);
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  upgradePackage = async (
+    req: Request<{}, {}, UpgradePackageRequest>,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      await sendMail(upgradePackageMail(req.body))
+        .then(() => {
+          console.log(`Email sent: ${process.env.SALES_MAIL}`);
+        })
+        .catch(() => {
+          return res.status(HttpStatus.BAD_REQUEST).json({
+            message: `${CommonMessage.SEND_MAIL_FAIL} ${process.env.SALES_MAIL}`,
+          });
+        });
+      const response: HttpResponse<{}> = {
+        data: {
+          message: CommonMessage.SUCCESS,
+        },
+        status: HttpStatus.SUCCESS,
+      };
+      res.status(response.status).json({ message: response.data.message });
     } catch (error) {
       next(error);
     }
