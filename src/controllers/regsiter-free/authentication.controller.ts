@@ -4,20 +4,23 @@ import generator from 'generate-password';
 import jwt, { Secret } from 'jsonwebtoken';
 import LeeonAPI from '../../api/leeon.api';
 import UserDao from '../../dao/user.dao';
+import PackageDao from '../../dao/package.dao';
 import { delay } from '../../helpers/delay.helper';
 import { handleError } from '../../services/http/handle-error.service';
 import { HttpResponse, HttpStatus } from '../../services/http/http.type';
 import { registerMailContent, sendMail } from '../../services/send-email/email.service';
 import { validationHandleError } from '../../services/validation/validation-handle-error';
 import { AuthenticationMessage } from '../../shared/const/message.const';
-import { CustomRequestUser, UserInfo } from '../../shared/types/user.type';
+import { CustomRequestUser, Profile, UserInfo } from '../../shared/types/user.type';
 import {
   LoginRequestBody,
   LoginResponse,
   UserModelInfo,
   UserRequestBody,
   Role,
+  ProfileResponse,
 } from './authentication.type';
+import { PackageInfo } from 'shared/types/package.type';
 
 class AuthController {
   register = async (req: Request<{}, {}, UserRequestBody>, res: Response) => {
@@ -49,9 +52,10 @@ class AuthController {
       });
       const orgUnitId = pbxInfo?.data.id || 0;
       await delay(1000);
+      const packageInfo = (await PackageDao.getPackageById(packageId)) as PackageInfo;
       await LeeonAPI.setMaxExtensions({
         orgUnitId,
-        value: '5', // fake data
+        value: packageInfo.value,
       });
       const generatePassword = `${generator.generate({
         length: 9,
@@ -193,6 +197,21 @@ class AuthController {
             : AuthenticationMessage.WRONG_CURRENT_PASSWORD,
         },
         status: result?.[0] ? HttpStatus.SUCCESS : HttpStatus.BAD_REQUEST,
+      };
+      res.status(response.status).json(response.data);
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  getProfile = async (req: CustomRequestUser, res: Response, next: NextFunction) => {
+    try {
+      const userInfo = (await UserDao.getUserById(req.user?.id)) as Profile;
+      const response: HttpResponse<ProfileResponse> = {
+        data: {
+          profile: userInfo,
+        },
+        status: HttpStatus.SUCCESS,
       };
       res.status(response.status).json(response.data);
     } catch (error) {

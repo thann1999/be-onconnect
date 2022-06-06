@@ -1,8 +1,13 @@
 import { NextFunction, Request, Response } from 'express';
 import { HttpResponse, HttpStatus } from '../../services/http/http.type';
-import { CompareInfo, PackageInfo, UpgradePackageRequest } from '../../shared/types/package.type';
+import {
+  CompareInfo,
+  PackageInfo,
+  PackageOption,
+  UpgradePackageRequest,
+} from '../../shared/types/package.type';
 import PackageDao from '../../dao/package.dao';
-import { ComparePackageList, PackageList } from './package.type';
+import { ComparePackageList, PackageList, PackageOptionList } from './package.type';
 import { sendMail, upgradePackageMail } from '../../services/send-email/email.service';
 import { CommonMessage } from '../../shared/const/message.const';
 
@@ -13,6 +18,21 @@ class PackageController {
       const response: HttpResponse<PackageList> = {
         data: {
           packageList: result,
+        },
+        status: HttpStatus.SUCCESS,
+      };
+      res.status(response.status).json(response.data);
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  getOptionList = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const result = (await PackageDao.getListPackageOption()) as PackageOption[];
+      const response: HttpResponse<PackageOptionList> = {
+        data: {
+          optionList: result,
         },
         status: HttpStatus.SUCCESS,
       };

@@ -45,6 +45,23 @@ class BaseDao {
     });
   }
 
+  findByPk(
+    model: ModelStatic<Model<any, any>>,
+    id: number,
+    include?: ModelStatic<Model<any, any>>
+  ) {
+    return new Promise((resolve, reject) => {
+      const option: FindOptions = {
+        logging: false,
+      };
+      if (include) option.include = include;
+      model
+        .findByPk(id, option)
+        .then((value) => resolve(value))
+        .catch((err) => reject(err));
+    });
+  }
+
   findAll(
     model: ModelStatic<Model<any, any>>,
     where?: WhereOptions,

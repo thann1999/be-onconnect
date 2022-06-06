@@ -17,6 +17,14 @@ class PackageDao extends BaseDao {
     return super.findAll(PackageModel);
   }
 
+  getListPackageOption() {
+    return super.findAll(PackageModel, undefined, ['id', 'title', 'value']);
+  }
+
+  getPackageById(id: number) {
+    return super.findByPk(PackageModel, id);
+  }
+
   getListCompare() {
     return super.findAll(ComparePackageModel);
   }

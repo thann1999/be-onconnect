@@ -7,6 +7,9 @@ const router = express.Router();
 /* Get list all package  */
 router.get('/list-all', packageController.getListAll);
 
+/* Get list all package  */
+router.get('/option-list', packageController.getOptionList);
+
 /* Get compare package  */
 router.get('/compare', packageController.getListCompare);
 

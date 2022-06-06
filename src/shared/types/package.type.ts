@@ -43,6 +43,12 @@ export interface UpgradePackageRequest {
   packageName: string;
 }
 
+export interface PackageOption {
+  id: number;
+  title: string;
+  value: string;
+}
+
 export const initialPackage: Optional<PackageInfo, 'id'>[] = [
   {
     title: 'Essentials',

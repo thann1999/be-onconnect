@@ -20,10 +20,6 @@ const UserModel = sequelize.define(
       type: DataTypes.STRING,
       allowNull: false,
     },
-    packageId: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
     leeonUserId: {
       type: DataTypes.INTEGER,
       allowNull: false,
