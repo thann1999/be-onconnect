@@ -33,6 +33,16 @@ export interface PackageInfo {
   channels: string;
 }
 
+export interface UpgradePackageRequest {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phoneNumber: string;
+  companyName: string;
+  companyRegion: string;
+  packageName: string;
+}
+
 export const initialPackage: Optional<PackageInfo, 'id'>[] = [
   {
     title: 'Essentials',

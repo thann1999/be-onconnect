@@ -5,19 +5,21 @@ class AuthValidation {
     return [
       body('email')
         .notEmpty()
-        .withMessage('Email is required')
+        .withMessage('email is required')
         .isEmail()
-        .withMessage('Email not valid'),
-      body('firstName', 'FirstName is required').notEmpty(),
-      body('lastName', 'LastName is required').notEmpty(),
-      body('phoneNumber', 'PhoneNumber is required').notEmpty(),
-      body('switchboardName', 'SwitchboardName is required').notEmpty(),
-      body('packageId', 'PackageId is required').notEmpty(),
+        .withMessage('email not valid'),
+      body('firstName', 'firstName is required').notEmpty(),
+      body('lastName', 'lastName is required').notEmpty(),
+      body('phoneNumber', 'phoneNumber is required').notEmpty(),
+      body('switchboardName', 'switchboardName is required').notEmpty(),
+      body('packageId', 'packageId is required').notEmpty(),
       body('language')
         .notEmpty()
-        .withMessage('Language is required')
+        .withMessage('language is required')
         .isIn(['vi', 'en', 'de', 'fr', 'it'])
-        .withMessage('Language only is vi, en, de, fr, it'),
+        .withMessage('language only is vi, en, de, fr, it'),
+      body('companyName', 'companyName is required').notEmpty(),
+      body('companyRegion', 'companyRegion is required').notEmpty(),
     ];
   }
 
