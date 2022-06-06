@@ -1,6 +1,7 @@
 import sequelize from '../database/db-connection';
 import { DataTypes } from 'sequelize';
 import CompareModel from './compare-package.model';
+import UserModel from './user.model';
 
 const PackageModel = sequelize.define(
   'Package',
@@ -48,5 +49,8 @@ const PackageModel = sequelize.define(
 );
 
 PackageModel.hasOne(CompareModel, { foreignKey: 'packageId' });
+PackageModel.hasOne(UserModel, { foreignKey: 'packageId' });
+UserModel.belongsTo(PackageModel, { foreignKey: 'packageId' });
+CompareModel.belongsTo(UserModel, { foreignKey: 'packageId' });
 
 export default PackageModel;

@@ -1,4 +1,4 @@
-import { CompareInfo, PackageInfo } from '../../shared/types/package.type';
+import { CompareInfo, PackageInfo, PackageOption } from '../../shared/types/package.type';
 
 export interface PackageList {
   packageList: PackageInfo[];
@@ -6,4 +6,8 @@ export interface PackageList {
 
 export interface ComparePackageList {
   compareList: CompareInfo[];
+}
+
+export interface PackageOptionList {
+  optionList: PackageOption[];
 }

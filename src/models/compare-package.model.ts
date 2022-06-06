@@ -1,7 +1,7 @@
 import sequelize from '../database/db-connection';
 import { DataTypes } from 'sequelize';
 
-const PackageModel = sequelize.define(
+const ComparePackageModel = sequelize.define(
   'Compare',
   {
     isWebsiteLiveChat: {
@@ -50,4 +50,4 @@ const PackageModel = sequelize.define(
   }
 );
 
-export default PackageModel;
+export default ComparePackageModel;

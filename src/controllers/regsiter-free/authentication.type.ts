@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import { UserInfo } from '../../shared/types/user.type';
+import { Profile, UserInfo } from '../../shared/types/user.type';
 
 export enum Role {
   USER = 'user',
@@ -14,7 +14,7 @@ export interface UserRequestBody {
   companyName: string;
   companyRegion: string;
   switchboardName: string;
-  packageId: string;
+  packageId: number;
   language: string;
 }
 
@@ -36,4 +36,8 @@ export interface UserResponse extends UserRequestBody {
 export interface LoginResponse {
   accessToken: string;
   user: UserResponse | null;
+}
+
+export interface ProfileResponse {
+  profile: Profile;
 }
