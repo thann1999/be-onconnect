@@ -2,15 +2,6 @@ import axios, { AxiosRequestHeaders, Method } from 'axios';
 import { HttpMethod, HttpOptions } from './http.type';
 
 export class HttpService {
-  private _commonHeader = {
-    // Accept: 'application/json',
-    // 'Cache-Control': 'no-cache no-store',
-    // Pragma: 'no-cache',
-    // Expires: 0,
-    // 'Access-Control-Allow-Origin': '*',
-    // 'X-Requested-With': 'XMLHttpRequest',
-  };
-
   public get<T>(uri: string, options?: HttpOptions): Promise<T | undefined> {
     return this.request(uri, HttpMethod.GET, options);
   }
@@ -60,7 +51,6 @@ export class HttpService {
     const password = process.env.PBX_PASSWORD;
     const basicAuth = 'Basic ' + Buffer.from(`${username}:${password}`).toString('base64');
     return {
-      ...this._commonHeader,
       ...header,
       Authorization: basicAuth,
     };
