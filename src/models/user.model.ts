@@ -20,14 +20,8 @@ const UserModel = sequelize.define(
       type: DataTypes.STRING,
       allowNull: false,
     },
-    leeonUserId: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
-    orgUnitId: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
+    leeonUserId: DataTypes.INTEGER,
+    orgUnitId: DataTypes.INTEGER,
     companyName: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -36,18 +30,12 @@ const UserModel = sequelize.define(
       type: DataTypes.STRING,
       allowNull: false,
     },
-    leeonPassword: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
+    leeonPassword: DataTypes.STRING,
     password: {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    switchboardName: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
+    switchboardName: DataTypes.STRING,
     language: {
       type: DataTypes.STRING,
       allowNull: false,
