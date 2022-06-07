@@ -45,14 +45,14 @@ class AuthController {
 
       const ouInfo = await LeeonAPI.getOUPBXInfo();
       const pbxInfo = await LeeonAPI.createPBX({
-        name: switchboardName,
+        name: switchboardName || '',
         description: `Create new PBX with name ${switchboardName}`,
         parentId: ouInfo?.data.orgUnits[0].id || 0,
         type: 'pbx',
       });
       const orgUnitId = pbxInfo?.data.id || 0;
       await delay(1000);
-      const packageInfo = (await PackageDao.getPackageById(packageId)) as PackageInfo;
+      const packageInfo = (await PackageDao.getPackageById(packageId || 0)) as PackageInfo;
       await LeeonAPI.setMaxExtensions({
         orgUnitId,
         value: packageInfo.value,
@@ -111,7 +111,7 @@ class AuthController {
       res.status(response.status).json(response.data);
     } catch (error) {
       const leeonError = handleError(error);
-      res.status(leeonError.status).json(leeonError);
+      res.status(leeonError.status).json(leeonError.data.message);
     }
   };
 
@@ -149,11 +149,13 @@ class AuthController {
           switchboardName,
           companyName,
           companyRegion,
+          role,
         } = result;
         response.data = {
-          accessToken: this.generateJWTToken(result.email, result.id, result.switchboardName),
+          accessToken: this.generateJWTToken(result.email, result.id, result.switchboardName || ''),
           user: {
             email,
+            role,
             firstName,
             id,
             language,
@@ -220,7 +222,7 @@ class AuthController {
   };
 
   /* Hashing password by SHA256 */
-  private hashPassword = (password: string): string => {
+  hashPassword = (password: string): string => {
     return crypto.createHash('sha256').update(password).digest('base64');
   };
 

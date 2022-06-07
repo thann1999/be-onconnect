@@ -8,9 +8,9 @@ export interface CustomRequestUser extends Request {
 
 export interface UserInfo extends UserRequestBody {
   id?: number;
-  leeonUserId: number;
-  orgUnitId: number;
-  leeonPassword: string;
+  leeonUserId?: number;
+  orgUnitId?: number;
+  leeonPassword?: string;
   password: string;
   role: string;
 }

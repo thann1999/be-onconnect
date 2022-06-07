@@ -13,8 +13,8 @@ export interface UserRequestBody {
   phoneNumber: string;
   companyName: string;
   companyRegion: string;
-  switchboardName: string;
-  packageId: number;
+  switchboardName?: string;
+  packageId?: number;
   language: string;
 }
 
@@ -31,6 +31,7 @@ export interface UserModelInfo extends UserInfo {
 export interface UserResponse extends UserRequestBody {
   id: number;
   createdDate: string;
+  role: string;
 }
 
 export interface LoginResponse {
