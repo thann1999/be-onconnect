@@ -30,7 +30,7 @@ export interface UserModelInfo extends UserInfo {
 
 export interface UserResponse extends UserRequestBody {
   id: number;
-  createdDate: string;
+  createdAt: string;
   role: string;
 }
 
@@ -41,4 +41,12 @@ export interface LoginResponse {
 
 export interface ProfileResponse {
   profile: Profile;
+}
+
+export interface UserListResponse {
+  userList: Profile[];
+}
+
+export interface WarningExpiredDateRequest {
+  userId: number;
 }

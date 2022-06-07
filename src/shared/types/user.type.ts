@@ -16,5 +16,5 @@ export interface UserInfo extends UserRequestBody {
 }
 
 export interface Profile extends UserInfo {
-  package: PackageInfo;
+  Package: PackageInfo;
 }

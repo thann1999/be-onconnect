@@ -25,16 +25,20 @@ class AuthValidation {
 
   validateLogin() {
     return [
-      body('email', 'Email is required').notEmpty(),
-      body('password', 'Password is required').notEmpty(),
+      body('email', 'email is required').notEmpty(),
+      body('password', 'password is required').notEmpty(),
     ];
   }
 
   validateChangePassword() {
     return [
-      body('currentPassword', 'Current password is required').notEmpty(),
-      body('newPassword', 'New password is required').notEmpty(),
+      body('currentPassword', 'currentPassword is required').notEmpty(),
+      body('newPassword', 'newPassword is required').notEmpty(),
     ];
+  }
+
+  validateWarningExpiredDate() {
+    return [body('userId', 'userId is required').notEmpty()];
   }
 }
 

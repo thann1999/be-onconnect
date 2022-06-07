@@ -3,6 +3,7 @@ import { google } from 'googleapis';
 import { GoogleConfig } from './google-config';
 import { MailOptions } from 'nodemailer/lib/json-transport';
 import { UpgradePackageRequest } from 'shared/types/package.type';
+import { Profile } from 'shared/types/user.type';
 
 const oAuth2Client = new google.auth.OAuth2(
   GoogleConfig.CLIENT_ID,
@@ -69,6 +70,23 @@ export function upgradePackageMail(data: UpgradePackageRequest) {
       <p style="margin-left: 20px">Công ty: ${companyName}</p>
       <p style="margin-left: 20px">Địa chỉ: ${companyRegion}</p>
       <p>Vui lòng liên hệ với khách hàng sớm nhất có thể.</p>
+    `,
+  };
+}
+
+export function expiredDateEmail(data: Profile) {
+  const { email, firstName, lastName } = data;
+  const fullName = `${firstName} ${lastName}`;
+  return {
+    from: process.env.USER_GMAIL,
+    to: email,
+    subject: '[Onconnect] Hết hạn dùng thử',
+    html: `
+      <h2 style="text-align: center">Thông báo gói dịch vụ dùng thử sắp hết hạn</h2>
+      <p>Kính chào bạn: ${fullName}. Chúng tôi gửi mail này 
+        để thông báo gói cước dùng thử của bạn sắp hết hạn</p>
+      <p>Chúng tôi sẽ rất vui nếu bạn nâng cấp gói cước 
+      và tiếp tục sử dụng dịch vụ của ONCONNECT.</p>
     `,
   };
 }

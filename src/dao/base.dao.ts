@@ -8,6 +8,13 @@ import {
   WhereOptions,
 } from 'sequelize/types';
 
+interface FindDaoProps {
+  model: ModelStatic<Model<any, any>>;
+  where?: WhereOptions;
+  attributes?: FindAttributeOptions;
+  include?: ModelStatic<Model<any, any>>;
+}
+
 class BaseDao {
   insertOne(model: ModelStatic<Model<any, any>>, data: Optional<any, string>) {
     return new Promise((resolve, reject) => {
@@ -62,15 +69,12 @@ class BaseDao {
     });
   }
 
-  findAll(
-    model: ModelStatic<Model<any, any>>,
-    where?: WhereOptions,
-    attributes?: FindAttributeOptions
-  ) {
+  findAll({ model, attributes, where, include }: FindDaoProps) {
     return new Promise((resolve, reject) => {
       const option: FindOptions = { logging: false };
       if (where) option.where = where;
       if (attributes) option.attributes = attributes;
+      if (include) option.include = include;
       model
         .findAll(option)
         .then((value) => resolve(value))
