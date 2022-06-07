@@ -3,6 +3,7 @@ import { UserInfo } from '../shared/types/user.type';
 import BaseDao from './base.dao';
 import { Optional } from 'sequelize/types';
 import PackageModel from '../models/package.model';
+import { Role } from '../controllers/regsiter-free/authentication.type';
 
 class UserDao extends BaseDao {
   insertUser(data: Optional<UserInfo, 'id'>) {
@@ -11,6 +12,15 @@ class UserDao extends BaseDao {
 
   getUserById(id: number) {
     return super.findByPk(UserModel, id, PackageModel);
+  }
+
+  // Get all user not include admin
+  getAllUser() {
+    return super.findAll({
+      model: UserModel,
+      where: { role: Role.USER },
+      include: PackageModel,
+    });
   }
 
   findUserByEmailAndPassword(email: string, password: string) {

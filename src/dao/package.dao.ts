@@ -14,11 +14,14 @@ class PackageDao extends BaseDao {
   }
 
   getListAllPackage() {
-    return super.findAll(PackageModel);
+    return super.findAll({ model: PackageModel });
   }
 
   getListPackageOption() {
-    return super.findAll(PackageModel, undefined, ['id', 'title', 'value']);
+    return super.findAll({
+      model: PackageModel,
+      attributes: ['id', 'title', 'value'],
+    });
   }
 
   getPackageById(id: number) {
@@ -26,7 +29,7 @@ class PackageDao extends BaseDao {
   }
 
   getListCompare() {
-    return super.findAll(ComparePackageModel);
+    return super.findAll({ model: ComparePackageModel });
   }
 }
 

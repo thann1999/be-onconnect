@@ -20,4 +20,13 @@ router.post(
 
 router.get('/profile', auth, authController.getProfile);
 
+router.get('/user-list', auth, authController.getUserList);
+
+router.post(
+  '/warning-expired-date',
+  validation.validateWarningExpiredDate(),
+  auth,
+  authController.warningExpiredDate
+);
+
 export default router;

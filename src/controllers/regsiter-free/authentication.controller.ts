@@ -8,9 +8,13 @@ import PackageDao from '../../dao/package.dao';
 import { delay } from '../../helpers/delay.helper';
 import { handleError } from '../../services/http/handle-error.service';
 import { HttpResponse, HttpStatus } from '../../services/http/http.type';
-import { registerMailContent, sendMail } from '../../services/send-email/email.service';
+import {
+  expiredDateEmail,
+  registerMailContent,
+  sendMail,
+} from '../../services/send-email/email.service';
 import { validationHandleError } from '../../services/validation/validation-handle-error';
-import { AuthenticationMessage } from '../../shared/const/message.const';
+import { AuthenticationMessage, CommonMessage } from '../../shared/const/message.const';
 import { CustomRequestUser, Profile, UserInfo } from '../../shared/types/user.type';
 import {
   LoginRequestBody,
@@ -19,6 +23,8 @@ import {
   UserRequestBody,
   Role,
   ProfileResponse,
+  UserListResponse,
+  WarningExpiredDateRequest,
 } from './authentication.type';
 import { PackageInfo } from 'shared/types/package.type';
 
@@ -152,7 +158,12 @@ class AuthController {
           role,
         } = result;
         response.data = {
-          accessToken: this.generateJWTToken(result.email, result.id, result.switchboardName || ''),
+          accessToken: this.generateJWTToken(
+            result.email,
+            result.id,
+            result.switchboardName || '',
+            role
+          ),
           user: {
             email,
             role,
@@ -165,7 +176,7 @@ class AuthController {
             switchboardName,
             companyName,
             companyRegion,
-            createdDate: createdAt,
+            createdAt,
           },
         };
         response.status = HttpStatus.SUCCESS;
@@ -221,14 +232,66 @@ class AuthController {
     }
   };
 
+  getUserList = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const listUser = (await UserDao.getAllUser()) as Profile[];
+      const response: HttpResponse<UserListResponse> = {
+        data: {
+          userList: listUser,
+        },
+        status: HttpStatus.SUCCESS,
+      };
+      res.status(response.status).json(response.data);
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  warningExpiredDate = async (
+    req: Request<{}, {}, WarningExpiredDateRequest>,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      const profile = (await UserDao.getUserById(req.body.userId)) as Profile;
+      if (profile) {
+        await sendMail(expiredDateEmail(profile))
+          .then(() => {
+            console.log(`Email sent: ${profile.email}`);
+          })
+          .catch(() => {
+            return res.status(HttpStatus.BAD_REQUEST).json({
+              message: `${CommonMessage.SEND_MAIL_FAIL} ${profile.email}`,
+            });
+          });
+        const response: HttpResponse<{}> = {
+          data: {
+            message: CommonMessage.SUCCESS,
+          },
+          status: HttpStatus.SUCCESS,
+        };
+        return res.status(response.status).json({ message: response.data.message });
+      }
+
+      res.status(HttpStatus.BAD_REQUEST).json({ message: CommonMessage.RESOURCE_NOT_EXIT });
+    } catch (error) {
+      next(error);
+    }
+  };
+
   /* Hashing password by SHA256 */
-  hashPassword = (password: string): string => {
+  private hashPassword = (password: string): string => {
     return crypto.createHash('sha256').update(password).digest('base64');
   };
 
-  private generateJWTToken = (email: string, id: number, switchboardName: string): string => {
+  private generateJWTToken = (
+    email: string,
+    id: number,
+    switchboardName: string,
+    role: string
+  ): string => {
     const secret: Secret = process.env.JWT_SECRET_KEY || 'secret-key';
-    return jwt.sign({ id, switchboardName, email }, secret, {
+    return jwt.sign({ id, switchboardName, email, role }, secret, {
       expiresIn: '1d',
     });
   };

@@ -11,5 +11,6 @@ export enum AuthenticationMessage {
 
 export enum CommonMessage {
   SEND_MAIL_FAIL = 'Send email failed to:',
+  RESOURCE_NOT_EXIT = 'Resource does not exist',
   SUCCESS = 'Successful',
 }
