@@ -117,7 +117,7 @@ class AuthController {
       res.status(response.status).json(response.data);
     } catch (error) {
       const leeonError = handleError(error);
-      res.status(leeonError.status).json(leeonError.data.message);
+      res.status(leeonError.status).json({ message: leeonError.data.message });
     }
   };
 
