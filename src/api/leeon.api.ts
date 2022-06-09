@@ -95,4 +95,10 @@ export default class LeeonAPI {
       },
     });
   };
+
+  static blockUserExpiredDate = (orgUnitId: number) => {
+    return httpService.post('/rest/block', {
+      body: { orgUnitId },
+    });
+  };
 }

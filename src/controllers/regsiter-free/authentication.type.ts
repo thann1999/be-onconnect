@@ -1,11 +1,6 @@
 /* eslint-disable no-unused-vars */
 import { Profile, UserInfo } from '../../shared/types/user.type';
 
-export enum Role {
-  USER = 'user',
-  ADMIN = 'admin',
-}
-
 export interface UserRequestBody {
   email: string;
   firstName: string;

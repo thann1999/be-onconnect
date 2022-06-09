@@ -1,9 +1,10 @@
 import UserModel from '../models/user.model';
-import { UserInfo } from '../shared/types/user.type';
+import { UserInfo, Role } from '../shared/types/user.type';
 import BaseDao from './base.dao';
 import { Optional } from 'sequelize/types';
 import PackageModel from '../models/package.model';
-import { Role } from '../controllers/regsiter-free/authentication.type';
+import sequelize from '../database/db-connection';
+import { Op } from 'sequelize';
 
 class UserDao extends BaseDao {
   insertUser(data: Optional<UserInfo, 'id'>) {
@@ -29,6 +30,23 @@ class UserDao extends BaseDao {
 
   updateUser(where: any, value: any) {
     return super.update(UserModel, where, value);
+  }
+
+  getExpiredUser() {
+    return super.findAll({
+      model: UserModel,
+      where: {
+        [Op.and]: [
+          sequelize.where(
+            sequelize.fn('datediff', sequelize.fn('NOW'), sequelize.col('createdAt')),
+            {
+              [Op.gt]: 30,
+            }
+          ),
+          { role: Role.USER },
+        ],
+      },
+    });
   }
 }
 

@@ -9,6 +9,7 @@ import sequelize from './database/db-connection';
 import { AxiosError } from 'axios';
 import createError from 'http-errors';
 import helmet from 'helmet';
+import { blockUser } from './services/block-user/block-user.service';
 
 dotenv.config();
 const app = express();
@@ -38,6 +39,8 @@ app.use(cookieParser());
 // Routes
 app.use('/api/auth', authRoute);
 app.use('/api/package', packageRoute);
+
+blockUser();
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
