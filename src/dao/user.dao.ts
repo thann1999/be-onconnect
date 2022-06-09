@@ -35,12 +35,17 @@ class UserDao extends BaseDao {
   getExpiredUser() {
     return super.findAll({
       model: UserModel,
-      where: sequelize.where(
-        sequelize.fn('datediff', sequelize.fn('NOW'), sequelize.col('createdAt')),
-        {
-          [Op.gt]: 1,
-        }
-      ),
+      where: {
+        [Op.and]: [
+          sequelize.where(
+            sequelize.fn('datediff', sequelize.fn('NOW'), sequelize.col('createdAt')),
+            {
+              [Op.gt]: 30,
+            }
+          ),
+          { role: Role.USER },
+        ],
+      },
     });
   }
 }
