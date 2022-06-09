@@ -15,18 +15,17 @@ import {
 } from '../../services/send-email/email.service';
 import { validationHandleError } from '../../services/validation/validation-handle-error';
 import { AuthenticationMessage, CommonMessage } from '../../shared/const/message.const';
-import { CustomRequestUser, Profile, UserInfo } from '../../shared/types/user.type';
+import { CustomRequestUser, Profile, UserInfo, Role } from '../../shared/types/user.type';
 import {
   LoginRequestBody,
   LoginResponse,
   UserModelInfo,
   UserRequestBody,
-  Role,
   ProfileResponse,
   UserListResponse,
   WarningExpiredDateRequest,
 } from './authentication.type';
-import { PackageInfo } from 'shared/types/package.type';
+import { PackageInfo } from '../../shared/types/package.type';
 
 class AuthController {
   register = async (req: Request<{}, {}, UserRequestBody>, res: Response) => {
@@ -50,10 +49,11 @@ class AuthController {
       const fullName = `${firstName} ${lastName}`;
 
       const ouInfo = await LeeonAPI.getOUPBXInfo();
+      const ouId = ouInfo?.data.orgUnits[0].id || 0;
       const pbxInfo = await LeeonAPI.createPBX({
         name: switchboardName || '',
         description: `Create new PBX with name ${switchboardName}`,
-        parentId: ouInfo?.data.orgUnits[0].id || 0,
+        parentId: ouId,
         type: 'pbx',
       });
       const orgUnitId = pbxInfo?.data.id || 0;
