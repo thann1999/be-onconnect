@@ -106,15 +106,13 @@ class AuthController {
 
       await sendMail(registerMailContent(email, generatePassword))
         .then(() => {
-          console.log(`Email sent: ${email}`);
+          return res.status(response.status).json(response.data);
         })
         .catch(() => {
           return res.status(HttpStatus.BAD_REQUEST).json({
             message: `${AuthenticationMessage.SEND_MAIL_FAIL} ${email}`,
           });
         });
-
-      res.status(response.status).json(response.data);
     } catch (error) {
       const leeonError = handleError(error);
       res.status(leeonError.status).json({ message: leeonError.data.message });

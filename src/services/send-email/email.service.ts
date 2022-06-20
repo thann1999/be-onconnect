@@ -1,32 +1,18 @@
 import nodemailer, { TransportOptions } from 'nodemailer';
-import { google } from 'googleapis';
-import { GoogleConfig } from './google-config';
 import { MailOptions } from 'nodemailer/lib/json-transport';
 import { UpgradePackageRequest } from 'shared/types/package.type';
 import { Profile } from 'shared/types/user.type';
-
-const oAuth2Client = new google.auth.OAuth2(
-  GoogleConfig.CLIENT_ID,
-  GoogleConfig.CLIENT_SECRET_ID,
-  GoogleConfig.REDIRECT_URI
-);
-
-oAuth2Client.setCredentials({
-  refresh_token: GoogleConfig.REFRESH_TOKEN,
-});
+import { Office365Config } from './offfice365-config';
 
 export async function sendMail(mail: MailOptions) {
   try {
-    const accessToken = await oAuth2Client.getAccessToken();
     const transpot = nodemailer.createTransport({
-      service: 'gmail',
+      host: 'smtp.office365.com',
+      port: '587',
+      secureConnection: true,
       auth: {
-        accessToken,
-        type: 'OAuth2',
-        user: process.env.USER_GMAIL,
-        clientId: GoogleConfig.CLIENT_ID,
-        clientSecret: GoogleConfig.CLIENT_SECRET_ID,
-        refreshToken: GoogleConfig.REFRESH_TOKEN,
+        user: Office365Config.username,
+        pass: Office365Config.password,
       },
     } as TransportOptions);
 
@@ -39,7 +25,7 @@ export async function sendMail(mail: MailOptions) {
 // Mail content include: Username, password
 export function registerMailContent(email: string, password: string): MailOptions {
   return {
-    from: process.env.USER_GMAIL,
+    from: process.env.USER_OFFICE365,
     to: email,
     subject: '[Onconnect] Đăng ký dùng thử',
     html: `
@@ -57,7 +43,7 @@ export function upgradePackageMail(data: UpgradePackageRequest) {
   const { companyName, companyRegion, email, firstName, lastName, packageName, phoneNumber } = data;
   const fullName = `${firstName} ${lastName}`;
   return {
-    from: process.env.USER_GMAIL,
+    from: process.env.USER_OFFICE365,
     to: process.env.SALES_MAIL,
     subject: '[Onconnect] Nâng cấp gói cước',
     html: `
@@ -78,7 +64,7 @@ export function expiredDateEmail(data: Profile) {
   const { email, firstName, lastName } = data;
   const fullName = `${firstName} ${lastName}`;
   return {
-    from: process.env.USER_GMAIL,
+    from: process.env.USER_OFFICE365,
     to: email,
     subject: '[Onconnect] Hết hạn dùng thử',
     html: `
